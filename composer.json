@@ -1,0 +1,34 @@
+{
+    "name": "thefuriouscoder/propel2-data-cache-behavior",
+    "type": "propel-behavior",
+    "description": "A Propel ORM behavior that provide auto data caching to your model. Port to Propel2 of snakano/propel-data-cache-behavior",
+    "keywords": ["propel", "behavior", "cache"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Shinya Nakano",
+            "email": "s.nakano@do-mino.jp"
+        },
+        {
+            "name": "Diego Rin Martín",
+            "email": "diego.rin@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+          "TFC\\Propel\\Behavior\\DataCache\\": "src"
+        }
+    },
+    "require": {
+        "php": ">=5.3.3",
+        "propel/propel": "~2.0@dev",
+        "snakano/cache-store": "1.*"
+    },
+    "extra": {
+        "name": "data_cache",
+        "class": "TFC\\Propel\\Behavior\\DataCache\\DataCacheBehavior",
+	    "branch-alias": {
+		    "dev-master": "1.0.x-dev"
+	    }
+    }
+}
