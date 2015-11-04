@@ -284,7 +284,7 @@ public function find(ConnectionInterface \$con = null)
     \$criteria = \$this->isKeepQuery() ? clone \$this : \$this;
     \$dataFetcher = \$criteria->doSelect(\$con);
 
-    \$data = \$criteria->getFormatter()->init($criteria)->format(\$dataFetcher);
+    \$data = \$criteria->getFormatter()->init(\$criteria)->format(\$dataFetcher);
 
     if (\$this->isCacheEnable()) {
         {$queryClassName}::cacheStore(\$this->getCacheKey(), \$data, \$this->getLifeTime());
