@@ -93,7 +93,12 @@ protected \$cacheLifeTime = {$lifetime};
         $script .= "
 public static function purgeCache()
 {
-    return \\Domino\\CacheStore\\Factory::factory('{$backend}')->clearByNamespace({$this->tableClassName}::TABLE_NAME);
+
+    \$driver = \\TFC\\Cache\\DoctrineCacheFactory::factory('{$backend}');
+    \$driver->setNamespace({$this->tableClassName}::TABLE_NAME);
+
+    return \$driver->deleteAll();
+
 }
         ";
     }
@@ -107,7 +112,10 @@ public static function purgeCache()
 public static function cacheFetch(\$key)
 {
 
-    \$result = \\Domino\\CacheStore\\Factory::factory('{$backend}')->get({$this->tableClassName}::TABLE_NAME, \$key);
+    \$driver = \\TFC\\Cache\\DoctrineCacheFactory::factory('{$backend}');
+    \$driver->setNamespace({$this->tableClassName}::TABLE_NAME);
+
+    \$result = \$driver->fetch(\$key);
 
     if (\$result !== null) {
         if (\$result instanceof \\ArrayAccess) {
@@ -135,7 +143,10 @@ public static function cacheFetch(\$key)
         $script .= "
 public static function cacheStore(\$key, \$data, \$lifetime)
 {
-    return \\Domino\\CacheStore\\Factory::factory('{$backend}')->set({$this->tableClassName}::TABLE_NAME, \$key, \$data, \$lifetime);
+    \$driver = \\TFC\\Cache\\DoctrineCacheFactory::factory('{$backend}');
+    \$driver->setNamespace({$this->tableClassName}::TABLE_NAME);
+
+    return \$driver->save(\$key,\$data,\$lifetime);
 }
         ";
     }
@@ -147,7 +158,10 @@ public static function cacheStore(\$key, \$data, \$lifetime)
         $script .= "
 public static function cacheDelete(\$key)
 {
-    return \\Domino\\CacheStore\\Factory::factory('{$backend}')->clear({$this->tableClassName}::TABLE_NAME, \$key);
+    \$driver = \\TFC\\Cache\\DoctrineCacheFactory::factory('{$backend}');
+    \$driver->setNamespace({$this->tableClassName}::TABLE_NAME);
+
+    return \$driver->delete(\$key);
 }
         ";
     }
@@ -269,17 +283,11 @@ public function getLifeTime()
 public function find(ConnectionInterface \$con = null)
 {
     if (\$this->isCacheEnable() && \$cache = {$queryClassName}::cacheFetch(\$this->getCacheKey())) {
-        \$data = new \\Propel\\Runtime\\Collection\\ObjectCollection();
-
-        foreach(\$cache as \$element)
-        {
-            \$model = new {$className}();
-            \$model->fromArray(\$element);
-            \$data->append(\$model);
-
+        if (\$cache instanceof \\Propel\\Runtime\\Collection\\ObjectCollection) {
+            \$formatter = \$this->getFormatter()->init(\$this);
+            \$cache->setFormatter(\$formatter);
         }
-
-        return \$data;
+        return \$cache;
     }
 
     if (null === \$con) {
@@ -293,7 +301,7 @@ public function find(ConnectionInterface \$con = null)
     \$data = \$criteria->getFormatter()->init(\$criteria)->format(\$dataFetcher);
 
     if (\$this->isCacheEnable()) {
-        {$queryClassName}::cacheStore(\$this->getCacheKey(), \$data->toArray(), \$this->getLifeTime());
+        {$queryClassName}::cacheStore(\$this->getCacheKey(), \$data, \$this->getLifeTime());
     }
 
     return \$data;
@@ -320,14 +328,9 @@ public function find(ConnectionInterface \$con = null)
  */
 public function findOne(ConnectionInterface \$con  = null)
 {
-    if (\$this->isCacheEnable() && \$data = {$queryClassName}::cacheFetch(\$this->getCacheKey())) {
-        if (\$data instanceof {$className}) {
-            return \$data;
-        } else {
-            \$model = new {$className}();
-            \$model->fromArray(\$data);
-
-            return \$data;
+    if (\$this->isCacheEnable() && \$cache = {$queryClassName}::cacheFetch(\$this->getCacheKey())) {
+        if (\$cache instanceof {$className}) {
+            return \$cache;
         }
     }
 
@@ -343,7 +346,7 @@ public function findOne(ConnectionInterface \$con  = null)
     \$data = \$criteria->getFormatter()->init(\$criteria)->formatOne(\$dataFetcher);
 
     if (\$this->isCacheEnable()) {
-        {$queryClassName}::cacheStore(\$this->getCacheKey(), \$data->toArray(), \$this->getLifeTime());
+        {$queryClassName}::cacheStore(\$this->getCacheKey(), \$data, \$this->getLifeTime());
     }
 
     return \$data;
