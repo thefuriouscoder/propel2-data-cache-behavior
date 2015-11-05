@@ -22,7 +22,6 @@
     "require": {
         "php": ">=5.3.3",
         "propel/propel": "~2.0@dev",
-        "doctrine/cache": "~1.5.1",
         "thefuriouscoder/doctrine-cache-factory": "dev-master"
     },
     "extra": {

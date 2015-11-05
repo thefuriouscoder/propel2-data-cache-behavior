@@ -2,11 +2,11 @@ Data Cache Behavior for Propel2
 ==========================
 [![Build Status](https://travis-ci.org/SNakano/PropelDataCacheBehavior.png)](https://travis-ci.org/SNakano/PropelDataCacheBehavior)
 [![Latest Stable Version](https://poser.pugx.org/thefuriouscoder/propel2-data-cache-behavior/v/stable.png)](https://packagist.org/packages/thefuriouscoder/propel2-data-cache-behavior)
-[![Total Downloads](https://poser.pugx.org/thefuriouscoder/propel2-data-cache-behavior/downloads.png)](https://packagist.org/packages/snakano/propel-data-cache-behavior)
+[![Total Downloads](https://poser.pugx.org/thefuriouscoder/propel2-data-cache-behavior/downloads.png)](https://packagist.org/packages/thefuriouscoder/propel2-data-cache-behavior)
 
 A Propel ORM behavior that provide auto data caching to your model. Based on Propel 1.6 work of [SNakano](https://github.com/SNakano/PropelDataCacheBehavior).
 
-- support caching system APC, memcached and Redis (via [DominoCacheStore](https://github.com/SNakano/CacheStore))
+- support caching system APC, memcached and Redis (via [DoctrineCache](https://github.com/doctrine/cache))
 - auto caching and auto flush.
 
 #### What's the difference with Query Cache Behavior
@@ -18,7 +18,7 @@ Requirements
 ------------
 - PHP >= 5.3
 - Propel >= 2.0.0
-- [DominoCacheStore](https://github.com/SNakano/CacheStore)
+- [DoctrineCacheFactory](https://github.com/thefuriouscoder/doctrine-cache-factory)
 
 
 Install
@@ -60,11 +60,11 @@ Add the following configuration code to your project bootstraping file depending
 ### Using Memcached (php5-memcached extension needed)
 ```php
 // configure memcached setting.
-Domino\CacheStore\Factory::setOption(
+TFC\Cache\DoctrineCacheFactory::setOption(
     array(
         'storage'     => 'memcached',
         'prefix'      => 'rlyeh',
-        'default_ttl' => 360,
+        'default_ttl' => 3600,
         'servers'     => array(
             array('server1', 11211, 20),
             array('server2', 11211, 80)
@@ -77,10 +77,10 @@ Domino\CacheStore\Factory::setOption(
 ### Using APC
 ```php
 // configure APC setting.
-Domino\CacheStore\Factory::setOption(
+TFC\Cache\DoctrineCacheFactory::setOption(
     array(
         'storage'     => 'apc',
-        'default_ttl' => 360
+        'default_ttl' => 3600
     )
 );
 
@@ -90,13 +90,13 @@ Domino\CacheStore\Factory::setOption(
 ### Using Redis
 ```php
 // configure Redis setting.
-Domino\CacheStore\Factory::setOption(
+TFC\Cache\DoctrineCacheFactory::setOption(
     array(
         'storage'     => 'redis',
         'prefix'      => 'rlyeh',
         'host         => '127.0.0.1',
         'port'        => 6379,
-        'default_ttl' => 360
+        'default_ttl' => 3600
     )
 );
 
